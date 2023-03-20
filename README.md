@@ -1,12 +1,12 @@
 # Demo exercise
 
-This is a demo for an exercise, and this solution is based on keynmol/http4s-laminar-stack which I have been wanting to try out. It features an architecture where the protocol is compiled once and is shared between frontend and backend. For this exercise it is a bit overblown, granted, but I got where I wanted quick by adapting it.
+This is a demo for an exercise, and this solution is based on keynmol/http4s-laminar-stack which I have been wanting to try out. It features an architecture where the protocol data classes are the ground truth for the HTTP message en- and decoding. For that reason this project consists of a frontend, backend and shared structure even if only the backend component is used to service this demo.
 
 - Language: Scala 3
 - backend server: Http4s
-- The service is implemented in `modules/backend/src/main/scala/example/backend/TestService.scala`
-- The JSON protocol is defined in `modules/shared/src/main/scala/example/shared/Protocol.scala`
-- The routes are defined in `modules/backend/src/main/scala/example/backend/Routes.scala`
+- The service is implemented in [modules/backend/src/main/scala/example/backend/TestService.scala](https://github.com/simlei/demo123/blob/master/modules/backend/src/main/scala/example/backend/TestService.scala)
+- The JSON protocol is defined in `modules/shared/src/main/scala/example/shared/Protocol.scala`(https://github.com/simlei/demo123/blob/master/modules/shared/src/main/scala/example/shared/Protocol.scala)
+- The routes are defined in `modules/backend/src/main/scala/example/backend/Routes.scala`(https://github.com/simlei/demo123/blob/master/modules/backend/src/main/scala/example/backend/Routes.scala)
 
 # A note on the validation of the JSON message
 
