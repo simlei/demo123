@@ -7,9 +7,9 @@ import org.http4s.implicits.*
 import org.http4s.server.middleware.GZip
 
 object Server extends IOApp:
-  def resource(service: Service, config: ServerConfig) =
+  def resource(service: Service, demo123: TestService, config: ServerConfig) =
     val frontendJS = config.mode + ".js"
-    val routes     = new Routes(service, frontendJS).routes
+    val routes     = new Routes(service, demo123, frontendJS).routes
 
     val app = GZip(routes)
 
@@ -31,7 +31,7 @@ object Server extends IOApp:
           )
         )
 
-        resource(ServiceImpl, config)
+        resource(ServiceImpl, TestServiceImpl, config)
           .use(_ => status *> IO.never)
           .as(ExitCode.Success)
 end Server

@@ -16,6 +16,7 @@ import example.shared.Protocol.*
 
 class Routes(
     service: Service,
+    testService: TestService,
     frontendJS: String
 ) extends Http4sDsl[IO]:
   def routes = HttpRoutes.of[IO] {
@@ -31,6 +32,16 @@ class Routes(
         // loader gif
         resp <- Ok(result) <* IO.sleep(50.millis)
       yield resp
+
+    case request @ POST -> Root / "demo123" =>
+      for
+        req <- circeEntityDecoder[IO, demo123.Request]
+          .decode(request, strict = true)
+          .value
+        response <- req match
+          case Right(reqValid) => Ok(testService.getResponse(reqValid))
+          case Left(failure) => BadRequest(IO.pure(failure.getMessage))
+      yield response
 
     case request @ GET -> Root / "frontend" / "app.js" =>
       StaticFile
