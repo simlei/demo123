@@ -16,23 +16,27 @@ On invalid JSON objects, the automatic JSON decoder this project uses (provided 
 
 # Running it
 
-**1) building yourself**
+There are two options:
+
+**1) Building yourself**
 
 You will need to install the build tool [`sbt`](https://www.scala-sbt.org/download.html)
 
 `sbt runDev`
 
-**2) using the compiled docker image**
+**2) Using the compiled docker image**
 
-For speed and convenience I hosted the exported docker image directly in this repository, even if that is not the best place for such artifacts. Download and run it via:
+For speed and convenience I hosted the exported docker image in my dropbox. Download and run it via:
   
 ```bash
-
+curl -L https://www.dropbox.com/s/1hwvbpjth6tw66s/demo123-docker.tar?dl=1 > ./demo123-docker.tar
+docker load -i ./demo123-docker.tar
+docker run --rm -p 8080:8080 demo123
 ```
 
 # Testing it
 
-test the request with e.g.:
+Test the request with e.g.:
 
 ```bash
 #!/usr/bin/env bash
@@ -62,12 +66,20 @@ json=$(cat <<-"END"
 END
 )
 
-curl -X POST localhost:9000/demo123 \
+curl -X POST localhost:8080/demo123 \
    -H "Content-Type: application/json" \
    -d "$json"
 ```
 
-(this script is also available as `bin/test.sh` in this repository)
+This script is also available as `bin/test.sh` in this repository.
+Observe the console output of your docker or sbt console; if it says it uses another port than 8080, you need to change the script accordingly.
+
+The output of the bash invocation of the script should be:
+
+```txt
+{"result":8}
+```
+
 
 ## Docker packaging 
 
