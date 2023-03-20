@@ -20,18 +20,6 @@ class Routes(
     frontendJS: String
 ) extends Http4sDsl[IO]:
   def routes = HttpRoutes.of[IO] {
-    case request @ POST -> Root / "get-suggestions" =>
-      for
-        req <- circeEntityDecoder[IO, GetSuggestions.Request]
-          .decode(request, strict = true)
-          .value
-        result <- service.getSuggestions(
-          req.getOrElse(throw new RuntimeException("what"))
-        )
-        // introduce a fake delay here to showcase the amazing
-        // loader gif
-        resp <- Ok(result) <* IO.sleep(50.millis)
-      yield resp
 
     case request @ POST -> Root / "demo123" =>
       for
@@ -43,20 +31,6 @@ class Routes(
           case Left(failure) => BadRequest(IO.pure(failure.getMessage))
       yield response
 
-    case request @ GET -> Root / "frontend" / "app.js" =>
-      StaticFile
-        .fromResource[IO](frontendJS, Some(request))
-        .getOrElseF(NotFound())
-
-    case request @ GET -> Root / "frontend" =>
-      StaticFile
-        .fromResource[IO]("index.html", Some(request))
-        .getOrElseF(NotFound())
-
-    case request @ GET -> Root / "assets" / path if staticFileAllowed(path) =>
-      StaticFile
-        .fromResource("/assets/" + path, Some(request))
-        .getOrElseF(NotFound())
   }
 
   private def staticFileAllowed(path: String) =
