@@ -1,55 +1,73 @@
-# http4s-laminar-stack ![build](https://github.com/keynmol/http4s-laminar-stack/workflows/build/badge.svg)
+# Demo exercise
 
+This is a demo for an exercise, and this solution is based on keynmol/http4s-laminar-stack which I have been wanting to try out. It features an architecture where the protocol is compiled once and is shared between frontend and backend. For this exercise it is a bit overblown, granted, but I got where I wanted quick by adapting it.
 
-This is an example of a full-stack application with the following features:
+- Language: Scala 3
+- backend server: Http4s
+- The service is implemented in `modules/backend/src/main/scala/example/backend/TestService.scala`
+- The JSON protocol is defined in `modules/shared/src/main/scala/example/shared/Protocol.scala`
+- The routes are defined in `modules/backend/src/main/scala/example/backend/Routes.scala`
 
-- Scala 3 on both frontend and backend 
-- [Laminar](https://github.com/raquo/Laminar) as a frontend library
-- [Http4s](https://http4s.org/) as a backend HTTP server library 
-- Shared code with **protocol** definitions
-- Gzip compression on the server side
-- Docker packaging of the full application
-- Tests for the client with simulated DOM using [jsdom](https://github.com/scala-js/scala-js-env-jsdom-nodejs)
+# A note on the validation of the JSON message
 
-_**Note**_: this is a very basic setup, for a more complicated template (with Postgres,
-API spec using Smithy, etc.) please see [Smithy4s Fullstack template](https://github.com/indoorvivants/smithy4s-fullstack-template)
+I decided to only validate the incoming JSON message where it concerned the task; i.e., fields like "meta" can be bissing and the service will still compute the correct number.
 
-Additionally, you can check out my blog series about fullstack Scala 3:
+On invalid JSON objects, the automatic JSON decoder this project uses (provided by circe) fails and the failure message is returned in a HTTP Bad Request response.
 
-- [Twotm8](https://blog.indoorvivants.com/tags/series:twotm8) - building and deploying a full-stack 
-  Scala application using Scala Native and Scala.js 
+# Running it
 
-- [Smithy4s](https://blog.indoorvivants.com/tags/series:smithy4s) - building and 
-  deploying a full-stack Scala app with Smithy4s and Scala.js
+**1) building yourself**
 
-_**Note**_: this version of the template uses the latest and greatest from Cats Effect, http4s, Scala, etc. If you would like, please see the [last commit](https://github.com/keynmol/http4s-laminar-stack/commit/9d2078e0da73192be6d16d20ecaec1ee783db842) that referenced old versions of the libraries. Apart from Scala 3 (which is still wonky around IntelliJ support), I **highly** recommend sticking with the latest versions of the libraries. 
+You will need to install the build tool [`sbt`](https://www.scala-sbt.org/download.html)
 
-## Development mode
+`sbt runDev`
 
-Run in SBT (uses fast JS compilation, not optimized):
+**2) using the compiled docker image**
 
-```
-sbt> ~runDev
-```
-
-And open http://localhost:9000/frontend
-
-This will restart the server on any changes: shared code, client/server, assets.
-
-## Tests
-It is a prerequisite to have jsdom installed, in order for the frontend tests to run. Proposal:
-```
-yarn add jsdom
-```
-Then move into an sbt console and run tests as normal
-
-## Production mode
-
-Run in SBT (uses full JS optimization):
+For speed and convenience I hosted the exported docker image directly in this repository, even if that is not the best place for such artifacts. Download and run it via:
+  
+```bash
 
 ```
-sbt> ~runProd
+
+# Testing it
+
+test the request with e.g.:
+
+```bash
+#!/usr/bin/env bash
+
+json=$(cat <<-"END"
+{
+  "address": {
+    "colorKeys": [
+      "A",
+      "G",
+      "Z"
+    ],
+    "values": [
+      74,
+      117,
+      115,
+      116,
+      79,
+      110
+    ]
+  },
+  "meta": {
+    "digits": 33,
+    "processingPattern": "d{5}+[a-z&$§]"
+  }
+}
+END
+)
+
+curl -X POST localhost:9000/demo123 \
+   -H "Content-Type: application/json" \
+   -d "$json"
 ```
+
+(this script is also available as `bin/test.sh` in this repository)
 
 ## Docker packaging 
 
@@ -57,18 +75,9 @@ sbt> ~runProd
 sbt> backend/docker:publishLocal
 ```
 
-Will publish the docker image with fully optimised JS code, and you can run the container:
+Then, run it:
 
 ```bash
-✗ docker run --rm -p 8080:8080 laminar-http4s-example:0.1.0-SNAPSHOT
-
-SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-SLF4J: Defaulting to no-operation (NOP) logger implementation
-SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-Running server on http://0.0.0.0:8080 (mode: prod)
+✗ docker run --rm -p 8080:8080 demo123
 ```
 
-
-The interface is fairly simple:
-
-![](https://imgur.com/S0f0i8i.png)
