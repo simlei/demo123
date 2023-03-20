@@ -10,7 +10,7 @@ This is a demo for an exercise, and this solution is based on keynmol/http4s-lam
 
 # A note on the validation of the JSON message
 
-I decided to only validate the incoming JSON message where it concerned the task; i.e., fields like "meta" can be bissing and the service will still compute the correct number.
+I decided to only validate the incoming JSON message where it concerned the task; i.e., fields like "meta" can be missing and the service will still compute the correct number.
 
 On invalid JSON objects, the automatic JSON decoder this project uses (provided by circe) fails and the failure message is returned in a HTTP Bad Request response.
 
