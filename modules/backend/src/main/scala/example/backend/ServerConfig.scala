@@ -15,7 +15,7 @@ case class ServerConfig(
 
 object ServerConfig:
   private val DefaultHost = "0.0.0.0"
-  private val DefaultPort = 9000
+  private val DefaultPort = 8080
   private val DefaultMode = "dev"
 
   private val hostOpt = Opts
