@@ -89,7 +89,7 @@ lazy val backend = project
       "--port 8080",
       "--mode prod"
     ),
-    Docker / packageName := "laminar-http4s-example"
+    Docker / packageName := "demo123"
   )
 
 lazy val shared = crossProject(JSPlatform, JVMPlatform)
